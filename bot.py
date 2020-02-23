@@ -1,19 +1,29 @@
 import discord
+import asyncio
+import time
 from discord.ext import commands
+from discord import TextChannel
+
 random = __import__("random")
 
 client = commands.Bot(command_prefix = '.')
 client.remove_command('help')
 
+#COMANDO PER LO STATUS DEL BOT+ ID BOT + NOME BOT
 @client.event
 async def on_ready():
     await client.change_presence(status=discord.Status.idle, activity=discord.Game('Bit Heroes'))
     print('Il bot è pronto e funzionante.')
+    print(client.user.name)
+    print(client.user.id)
+    print('---------------------------------------------------------------------------------------------------------')
 
+#COMANDO PING
 @client.command()
 async def ping(ctx):
     await ctx.send(f'Pong! {round(client.latency * 1000)} ms')
 
+#COMANDO PER FIRE
 @client.command()
 async def fire(ctx):
     responses = ['https://i.kym-cdn.com/photos/images/newsfeed/001/505/718/136.jpg', #gattoschifomado
@@ -23,6 +33,9 @@ async def fire(ctx):
                  'https://cdn02.nintendo-europe.com/media/images/10_share_images/games_15/nintendo_switch_download_software_1/H2x1_NSwitchDS_Warframe_image1600w.jpg'] #warframe
     await ctx.send(random.choice(responses))
 
+
+
+#COMANDO PER ROSE
 @client.command()
 async def rose(ctx):
     responses = ['https://i.kym-cdn.com/photos/images/original/000/862/912/fdf.gif', #anime ass
@@ -35,41 +48,103 @@ async def rose(ctx):
                  'https://media.giphy.com/media/SpzdWtMmREEaA/giphy.gif'] #taiga felice
     await ctx.send(random.choice(responses))
 
+#CREAZIONE INVITI
+@client.command(name='serverlink',pass_context=True)
+async def dm(ctx, *argument):
+    #creating invite link
+    invitelink = await ctx.channel.create_invite(max_uses=1,unique=True)
+    #dming it to the person
+    await ctx.author.send(invitelink)
+
+#INVITARE IL BOT NEL PROPRIO SERVER
+@client.command(name='botlink',pass_context=True)
+async def dm(ctx, *argument):
+    url = 'https://discordapp.com/api/oauth2/authorize?client_id=611849193136586763&permissions=8&scope=bot'
+    await ctx.author.send(url)
+
+#COMANDO PER CAPPU
 @client.command()
 async def cappu(ctx):
     responses = ['https://tenor.com/y8kZ.gif', #ragazzo cool
                 'https://tenor.com/rpCn.gif'] #sguardo sexy
     await ctx.send(random.choice(responses))
 
+#COMANDO PER ARTY
 @client.command()
 async def arty(ctx):
     responses = ['Lasciami stare',
                  'Vuoi un ban?',
                  'https://media.giphy.com/media/uC9e2ojJn1ZXW/giphy.gif',
                  'https://media.giphy.com/media/qPD4yGsrc0pdm/giphy.gif',
+                 'Te la sei cercata',
+                 'Continua cosi e ti banno',
                  'Sono pigro daiiii']
     await ctx.send(random.choice(responses))
 
+
+#COMANDO PER LE FRASI FILOSOFICHE DI PETTI
+@client.command()
+async def petty(ctx):
+    embed = discord.Embed(
+        color = discord.Colour.red()  
+    )
+    
+    embed.set_author(name='Saggio Petti')
+    responses = ['Quando il dito indica la luna lo stolto guarda il dito',
+                 'Cadi sette volte, rialzati otto',
+                 'Quando piove lo stolto impreca contro gli dei, il saggio si procura un ombrello',
+                 'Una coscienza pulita è il cuscino migliore',
+                 'Il momento migliore per piantare un albero era 20 anni fa. Il secondo miglior momento è ora',
+                 'Il nostro primo insegnante è il nostro cuore',
+                 'La donna è detta creatura debole, ma un suo pelo tira più di una coppia di elefanti.',
+                 'In un buon libro il meglio è tra le righe',
+                 'Anche con una sella dorata un asino non diventa un cavallo',
+                 'Una buona risata allunga la vita',
+                 'Amare ed essere saggi è impossibile']
+    embed.add_field(name = 'dile:', value = (random.choice(responses)), inline=False)
+    await ctx.send(embed=embed)
+
+#COMANDO PER NIC
 @client.command()
 async def nic(ctx):
     await ctx.send('https://media.giphy.com/media/3h40Gfu1mwk5xFAfcN/giphy.gif') #hanzo
 
+#COMANDO PER YODA
+@client.command()
+async def yoda(ctx):
+    responses = ['https://media0.giphy.com/media/26vIeEarfjFwKCEow/giphy.gif', #rainbow6
+                 'https://thumbs.gfycat.com/HotElatedIbizanhound-max-1mb.gif'] #rainbowmemes
+    await ctx.send(random.choice(responses))
+
+@client.command()
+async def invrox(ctx):
+    await ctx.send("sei inutile invrox")
+
+#COMANDO PER EVAN
 @client.command()
 async def eva(ctx):
     await ctx.send('Sei bello Rose!')
 
+#COMANDO PER LA GIF DI CANNELLA
+@client.command()
+async def canny(ctx):
+    await ctx.send('https://media0.giphy.com/media/1jadHTB4xIMBgNT0xd/giphy.gif')
+
+#COMANDO PER SAPERE CHI SCRIVE E VISUALIZZARLO SULLA BOARD DI PYTHON
 @client.event
 async def on_message(message):
     author = message.author
-    content = message.content
-    print(author, content)
+    content = message.content  #c'è un problema col bot che non visualizza nella board le ultime due lettere
+    channel = message.channel
+    print(author, channel, content)
     await client.process_commands(message)
 
+# COMANDO HELP PER VEDERE QUALI COMANDI DEL BOT CI SONO
 
-@client.command(pass_context = True)
+@client.command(pass_context = True)    
 async def help(ctx):
     embed = discord.Embed(
-        color = discord.Colour.blue()  
+        color = discord.Colour.orange()
     )
     
     embed.set_author(name='Help')
@@ -77,12 +152,24 @@ async def help(ctx):
     embed.add_field(name = '.arty', value = 'Il meglio di Arty', inline=False)
     embed.add_field(name = '.cappu', value = 'Le migliori gif di Cappu', inline=False)
     embed.add_field(name = '.fire', value = 'Le migliori gif di Firemage', inline=False)
+    embed.add_field(name = '.petty', value = 'I migliori proverbi dal mondo', inline=False)
     embed.add_field(name = '.eva', value = 'La frase meno iconica di Evan', inline=False)
     embed.add_field(name = '.nic', value = 'La miglior gif di Nic', inline=False)
+    embed.add_field(name = '.clear', value = 'Permette di default di cancellare 5 messaggi precedenti, Admin only', inline=False)
+    embed.add_field(name = '.yoda', value = 'Alcune gif divertenti su r6', inline=False)
+    embed.add_field(name = '.canny', value = 'Le sue gif preferite', inline=False)
     embed.add_field(name = '.ping', value = 'Controlla quanto lagga Arty', inline=False)
+    embed.add_field(name = '.serverlink', value = 'Ricevi in privato il link di invito del tuo bot', inline = False)
+    embed.add_field(name = '.botlink', value = 'Invita il bot nel tuo server personale!', inline = False)
     embed.add_field(name = 'Il bot è semplice e sviluppato col culo, abbiate pazienza.', value = 'Imparerò a programmare, lo giuro', inline=False)
     
     await ctx.send(embed=embed)
 
+#COMANDO PER PURGARE I MESSAGGI
+@client.command()
+@commands.has_permissions(manage_messages= True)
+async def clear(ctx, amount=5):
+    await ctx.channel.purge(limit=amount)
 
 client.run('TOKEN')
+
